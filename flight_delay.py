@@ -122,55 +122,64 @@ if uploaded_file is not None:
     c4.metric("Rata-rata Jarak (mil)", f"{avg_distance:.0f}")
 
     # ===============================================================
-    # 6️VISUALISASI UTAMA
+    # VISUALISASI UTAMA
     # ===============================================================
 
-    # --- Bar Chart: Delay per Airline ---
-    st.subheader("Rata-rata Delay per Maskapai")
-    avg_delay_airline = (
-        filtered.groupby('Airline')['ArrDelay'].mean().reset_index().sort_values(by='ArrDelay', ascending=False)
-    )
-    fig_bar = px.bar(
-        avg_delay_airline,
-        x='Airline', y='ArrDelay',
-        color='ArrDelay',
-        color_continuous_scale='Reds',
-        title="Rata-rata Arrival Delay per Maskapai"
-    )
-    st.plotly_chart(fig_bar, use_container_width=True)
+    st.subheader("Visualisasi Utama")
 
-    # --- Line Chart: Trend Delay per Bulan ---
-    st.subheader("Tren Keterlambatan per Bulan")
-    trend = filtered.groupby('Month')['ArrDelay'].mean().reset_index()
-    fig_line = px.line(trend, x='Month', y='ArrDelay', markers=True, title="Rata-rata Delay Bulanan")
-    st.plotly_chart(fig_line, use_container_width=True)
-
-    # --- Pie Chart: Proporsi Jenis Delay ---
-    st.subheader("Komposisi Jenis Delay")
-    delay_cols = ['CarrierDelay', 'WeatherDelay', 'NASDelay', 'SecurityDelay', 'LateAircraftDelay']
-    delay_sum = filtered[delay_cols].sum().reset_index()
-    delay_sum.columns = ['DelayType', 'TotalMinutes']
-    fig_pie = px.pie(delay_sum, names='DelayType', values='TotalMinutes', title="Proporsi Delay Berdasarkan Penyebab")
-    st.plotly_chart(fig_pie, use_container_width=True)
-
-    # --- Heatmap: Rata-rata Delay per Origin-Destination ---
-    st.subheader("Heatmap Rata-rata Delay (Origin vs Destination)")
-    heat = filtered.groupby(['Origin', 'Dest'])['ArrDelay'].mean().reset_index()
-    fig_heat = px.density_heatmap(
-        heat, x='Origin', y='Dest', z='ArrDelay', color_continuous_scale='Viridis',
-        title="Rata-rata Delay berdasarkan Rute"
-    )
-    st.plotly_chart(fig_heat, use_container_width=True)
-
+    # --- Bar Chart & Line Chart (1 baris) ---
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### ✈️ Rata-rata Delay per Maskapai")
+        avg_delay_airline = (
+            filtered.groupby('Airline')['ArrDelay'].mean().reset_index().sort_values(by='ArrDelay', ascending=False)
+        )
+        fig_bar = px.bar(
+            avg_delay_airline,
+            x='Airline', y='ArrDelay',
+            color='ArrDelay',
+            color_continuous_scale='Reds',
+            title="Rata-rata Arrival Delay per Maskapai"
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
+    
+    with col2:
+        st.markdown("### 📈 Tren Keterlambatan per Bulan")
+        trend = filtered.groupby('Month')['ArrDelay'].mean().reset_index()
+        fig_line = px.line(trend, x='Month', y='ArrDelay', markers=True, title="Rata-rata Delay Bulanan")
+        st.plotly_chart(fig_line, use_container_width=True)
+    
+    
+    # --- Pie Chart & Heatmap (1 baris berikutnya) ---
+    col3, col4 = st.columns(2)
+    
+    with col3:
+        st.markdown("### 🥧 Komposisi Jenis Delay")
+        delay_cols = ['CarrierDelay', 'WeatherDelay', 'NASDelay', 'SecurityDelay', 'LateAircraftDelay']
+        delay_sum = filtered[delay_cols].sum().reset_index()
+        delay_sum.columns = ['DelayType', 'TotalMinutes']
+        fig_pie = px.pie(delay_sum, names='DelayType', values='TotalMinutes', title="Proporsi Delay Berdasarkan Penyebab")
+        st.plotly_chart(fig_pie, use_container_width=True)
+    
+    with col4:
+        st.markdown("### 🔥 Heatmap Rata-rata Delay (Origin vs Destination)")
+        heat = filtered.groupby(['Origin', 'Dest'])['ArrDelay'].mean().reset_index()
+        fig_heat = px.density_heatmap(
+            heat, x='Origin', y='Dest', z='ArrDelay', color_continuous_scale='Viridis',
+            title="Rata-rata Delay berdasarkan Rute"
+        )
+        st.plotly_chart(fig_heat, use_container_width=True)
+    
     # ===============================================================
-    # 7️ANOMALI DETEKSI
+    # ANOMALI DETEKSI
     # ===============================================================
     st.subheader("Deteksi Anomali (Delay Ekstrem)")
     st.write(f"Jumlah anomali ditemukan: **{anomalies.shape[0]} penerbangan**")
     st.dataframe(anomalies[['Date', 'Airline', 'Origin', 'Dest', 'ArrDelay']].head(10))
 
     # ===============================================================
-    # 8️ACTIONABLE INSIGHTS
+    # ACTIONABLE INSIGHTS
     # ===============================================================
     st.subheader("Actionable Insights & Recommendations")
     st.markdown("""
@@ -180,7 +189,7 @@ if uploaded_file is not None:
     """)
 
     # ===============================================================
-    # 9️DOWNLOAD DATA TERFILTER
+    # DOWNLOAD DATA TERFILTER
     # ===============================================================
     st.download_button(
         "⬇Unduh Data Terfilter (CSV)",
