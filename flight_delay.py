@@ -32,7 +32,8 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
     # --- Cek dan ubah tipe data ---
-    df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+    # --- Cek dan ubah tipe data (pastikan format hari-bulan-tahun) ---
+    df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y', errors='coerce')
     numeric_cols = [
         'DepTime', 'ArrTime', 'CRSArrTime', 'ActualElapsedTime', 'CRSElapsedTime',
         'AirTime', 'ArrDelay', 'Distance', 'TaxiIn', 'TaxiOut',
@@ -164,14 +165,14 @@ if uploaded_file is not None:
     # ===============================================================
     # 7️ANOMALI DETEKSI
     # ===============================================================
-    st.subheader("🚨 Deteksi Anomali (Delay Ekstrem)")
+    st.subheader("Deteksi Anomali (Delay Ekstrem)")
     st.write(f"Jumlah anomali ditemukan: **{anomalies.shape[0]} penerbangan**")
     st.dataframe(anomalies[['Date', 'Airline', 'Origin', 'Dest', 'ArrDelay']].head(10))
 
     # ===============================================================
     # 8️ACTIONABLE INSIGHTS
     # ===============================================================
-    st.subheader("💡 Actionable Insights & Recommendations")
+    st.subheader("Actionable Insights & Recommendations")
     st.markdown("""
     - Maskapai dengan rata-rata delay tertinggi perlu **evaluasi operasional dan perawatan pesawat.**
     - Bulan tertentu menunjukkan tren delay tinggi, dapat dijadikan fokus **peningkatan jadwal dan kapasitas.**
