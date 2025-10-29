@@ -19,7 +19,7 @@ st.markdown("""
 Dashboard ini dibuat untuk menganalisis **penyebab keterlambatan penerbangan** 
 berdasarkan berbagai faktor seperti maskapai, cuaca, keamanan, dan kondisi sistem nasional udara (NAS).
 Melalui visualisasi data, kita dapat memahami **tren keterlambatan**, **maskapai paling efisien**, 
-dan **komponen delay terbesar** — guna mendukung pengambilan keputusan yang lebih tepat di industri penerbangan.
+dan **komponen delay terbesar**  guna mendukung pengambilan keputusan yang lebih tepat di industri penerbangan.
 """)
 
 # ===============================================================
