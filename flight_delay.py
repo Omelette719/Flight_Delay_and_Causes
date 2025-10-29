@@ -35,7 +35,7 @@ dan **komponen delay terbesar** — guna mendukung pengambilan keputusan yang le
 # ===============================================================
 st.subheader("🧹 Data Loading & Cleaning")
 
-uploaded_file = st.file_uploader("Unggah dataset Flight_delay.csv", type=["csv"])
+uploaded_file = st.file_uploader("Unggah dataset Flight_delay2.csv", type=["csv"])
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
