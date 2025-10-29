@@ -56,7 +56,7 @@ if uploaded_file is not None:
     df['TotalDelayMinutes'] = (
         df['CarrierDelay'] + df['WeatherDelay'] + df['NASDelay'] + df['SecurityDelay'] + df['LateAircraftDelay']
     )
-    df['OnTime'] = np.where(df['ArrDelay'] <= 15, 1, 0)
+    df['OnTime'] = np.where(df['ArrDelay'] <= 30, 1, 0)
     df['Delay_per_100_miles'] = (df['ArrDelay'] / df['Distance']) * 100
     df['Month'] = df['Date'].dt.month
 
