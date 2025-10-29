@@ -131,7 +131,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("### ✈️ Rata-rata Delay per Maskapai")
+        st.markdown("### Rata-rata Delay per Maskapai")
         avg_delay_airline = (
             filtered.groupby('Airline')['ArrDelay'].mean().reset_index().sort_values(by='ArrDelay', ascending=False)
         )
@@ -145,7 +145,7 @@ if uploaded_file is not None:
         st.plotly_chart(fig_bar, use_container_width=True)
     
     with col2:
-        st.markdown("### 📈 Tren Keterlambatan per Bulan")
+        st.markdown("### Tren Keterlambatan per Bulan")
         trend = filtered.groupby('Month')['ArrDelay'].mean().reset_index()
         fig_line = px.line(trend, x='Month', y='ArrDelay', markers=True, title="Rata-rata Delay Bulanan")
         st.plotly_chart(fig_line, use_container_width=True)
@@ -155,7 +155,7 @@ if uploaded_file is not None:
     col3, col4 = st.columns(2)
     
     with col3:
-        st.markdown("### 🥧 Komposisi Jenis Delay")
+        st.markdown("### Komposisi Jenis Delay")
         delay_cols = ['CarrierDelay', 'WeatherDelay', 'NASDelay', 'SecurityDelay', 'LateAircraftDelay']
         delay_sum = filtered[delay_cols].sum().reset_index()
         delay_sum.columns = ['DelayType', 'TotalMinutes']
@@ -163,7 +163,7 @@ if uploaded_file is not None:
         st.plotly_chart(fig_pie, use_container_width=True)
     
     with col4:
-        st.markdown("### 🔥 Heatmap Rata-rata Delay (Origin vs Destination)")
+        st.markdown("### Heatmap Rata-rata Delay (Origin vs Destination)")
         heat = filtered.groupby(['Origin', 'Dest'])['ArrDelay'].mean().reset_index()
         fig_heat = px.density_heatmap(
             heat, x='Origin', y='Dest', z='ArrDelay', color_continuous_scale='Viridis',
