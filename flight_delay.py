@@ -116,7 +116,7 @@ if uploaded_file is not None:
 
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Total Flights", f"{total_flights:,}")
-    c2.metric("⏱Rata-rata Delay (menit)", f"{avg_delay:.2f}")
+    c2.metric("Rata-rata Delay (menit)", f"{avg_delay:.2f}")
     c3.metric("% Tepat Waktu", f"{pct_ontime:.2f}%")
     c4.metric("Rata-rata Jarak (mil)", f"{avg_distance:.0f}")
 
