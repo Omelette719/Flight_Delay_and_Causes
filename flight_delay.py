@@ -1,11 +1,3 @@
-# ===============================================================
-# 🛫 FLIGHT DELAY ANALYTICS DASHBOARD
-# ===============================================================
-# Penulis: Muhammad Azwin Hakim
-# Tujuan: Visualisasi interaktif penyebab keterlambatan penerbangan
-# Dataset: Flight_delay.csv (Data Real)
-# ===============================================================
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -20,9 +12,9 @@ st.set_page_config(
 px.defaults.template = "plotly_dark"
 
 # ===============================================================
-# 1️⃣ KONTEXT STUDI KASUS
+# KONTEXT STUDI KASUS
 # ===============================================================
-st.title("✈️ Flight Delay Analytics Dashboard")
+st.title("Flight Delay Analytics Dashboard")
 st.markdown("""
 Dashboard ini dibuat untuk menganalisis **penyebab keterlambatan penerbangan** 
 berdasarkan berbagai faktor seperti maskapai, cuaca, keamanan, dan kondisi sistem nasional udara (NAS).
@@ -31,11 +23,11 @@ dan **komponen delay terbesar** — guna mendukung pengambilan keputusan yang le
 """)
 
 # ===============================================================
-# 2️⃣ MUAT DAN CLEANING DATA
+# MUAT DAN CLEANING DATA
 # ===============================================================
-st.subheader("🧹 Data Loading & Cleaning")
+st.subheader("Data Loading & Cleaning")
 
-uploaded_file = st.file_uploader("Unggah dataset Flight_delay2.csv", type=["csv"])
+uploaded_file = st.file_uploader("Unggah dataset Flight_delay.csv", type=["csv"])
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
@@ -78,12 +70,12 @@ if uploaded_file is not None:
     st.write("**Jumlah kolom:**", df.shape[1])
     st.dataframe(df.head())
 
-    st.markdown("✅ **Data sudah dibersihkan dan siap divisualisasikan.**")
+    st.markdown("**Data sudah dibersihkan dan siap divisualisasikan.**")
 
     # ===============================================================
-    # 3️⃣ PERTANYAAN BISNIS / ANALITIS
+    # PERTANYAAN BISNIS / ANALITIS
     # ===============================================================
-    st.subheader("🎯 Business Questions")
+    st.subheader("Business Questions")
     st.markdown("""
     1. Maskapai mana yang memiliki **rata-rata keterlambatan tertinggi** dan apa penyebab utamanya?  
     2. Bagaimana **tren keterlambatan penerbangan** berdasarkan waktu (bulan/hari)?  
@@ -91,9 +83,9 @@ if uploaded_file is not None:
     """)
 
     # ===============================================================
-    # 4️⃣ SIDEBAR FILTER
+    # SIDEBAR FILTER
     # ===============================================================
-    st.sidebar.header("🔍 Filter Data")
+    st.sidebar.header("Filter Data")
     min_date, max_date = df['Date'].min(), df['Date'].max()
     date_range = st.sidebar.date_input("Rentang tanggal", [min_date, max_date])
     selected_carriers = st.sidebar.multiselect("Pilih Maskapai", sorted(df['Airline'].unique()))
@@ -113,9 +105,9 @@ if uploaded_file is not None:
         filtered = filtered[filtered['Dest'].isin(selected_dest)]
 
     # ===============================================================
-    # 5️⃣ KPI SECTION (Metrik Baru)
+    # KPI SECTION (Metrik Baru)
     # ===============================================================
-    st.subheader("📊 Key Performance Indicators (KPI)")
+    st.subheader("Key Performance Indicators (KPI)")
 
     avg_delay = filtered['ArrDelay'].mean()
     pct_ontime = filtered['OnTime'].mean() * 100
@@ -123,17 +115,17 @@ if uploaded_file is not None:
     total_flights = filtered.shape[0]
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("✈️ Total Flights", f"{total_flights:,}")
-    c2.metric("⏱️ Rata-rata Delay (menit)", f"{avg_delay:.2f}")
-    c3.metric("🟢 % Tepat Waktu", f"{pct_ontime:.2f}%")
-    c4.metric("📏 Rata-rata Jarak (mil)", f"{avg_distance:.0f}")
+    c1.metric("Total Flights", f"{total_flights:,}")
+    c2.metric("⏱Rata-rata Delay (menit)", f"{avg_delay:.2f}")
+    c3.metric("% Tepat Waktu", f"{pct_ontime:.2f}%")
+    c4.metric("Rata-rata Jarak (mil)", f"{avg_distance:.0f}")
 
     # ===============================================================
-    # 6️⃣ VISUALISASI UTAMA
+    # 6️VISUALISASI UTAMA
     # ===============================================================
 
     # --- Bar Chart: Delay per Airline ---
-    st.subheader("🏢 Rata-rata Delay per Maskapai")
+    st.subheader("Rata-rata Delay per Maskapai")
     avg_delay_airline = (
         filtered.groupby('Airline')['ArrDelay'].mean().reset_index().sort_values(by='ArrDelay', ascending=False)
     )
@@ -147,13 +139,13 @@ if uploaded_file is not None:
     st.plotly_chart(fig_bar, use_container_width=True)
 
     # --- Line Chart: Trend Delay per Bulan ---
-    st.subheader("📅 Tren Keterlambatan per Bulan")
+    st.subheader("Tren Keterlambatan per Bulan")
     trend = filtered.groupby('Month')['ArrDelay'].mean().reset_index()
     fig_line = px.line(trend, x='Month', y='ArrDelay', markers=True, title="Rata-rata Delay Bulanan")
     st.plotly_chart(fig_line, use_container_width=True)
 
     # --- Pie Chart: Proporsi Jenis Delay ---
-    st.subheader("🧩 Komposisi Jenis Delay")
+    st.subheader("Komposisi Jenis Delay")
     delay_cols = ['CarrierDelay', 'WeatherDelay', 'NASDelay', 'SecurityDelay', 'LateAircraftDelay']
     delay_sum = filtered[delay_cols].sum().reset_index()
     delay_sum.columns = ['DelayType', 'TotalMinutes']
@@ -161,7 +153,7 @@ if uploaded_file is not None:
     st.plotly_chart(fig_pie, use_container_width=True)
 
     # --- Heatmap: Rata-rata Delay per Origin-Destination ---
-    st.subheader("🌍 Heatmap Rata-rata Delay (Origin vs Destination)")
+    st.subheader("Heatmap Rata-rata Delay (Origin vs Destination)")
     heat = filtered.groupby(['Origin', 'Dest'])['ArrDelay'].mean().reset_index()
     fig_heat = px.density_heatmap(
         heat, x='Origin', y='Dest', z='ArrDelay', color_continuous_scale='Viridis',
@@ -170,14 +162,14 @@ if uploaded_file is not None:
     st.plotly_chart(fig_heat, use_container_width=True)
 
     # ===============================================================
-    # 7️⃣ ANOMALI DETEKSI
+    # 7️ANOMALI DETEKSI
     # ===============================================================
     st.subheader("🚨 Deteksi Anomali (Delay Ekstrem)")
     st.write(f"Jumlah anomali ditemukan: **{anomalies.shape[0]} penerbangan**")
     st.dataframe(anomalies[['Date', 'Airline', 'Origin', 'Dest', 'ArrDelay']].head(10))
 
     # ===============================================================
-    # 8️⃣ ACTIONABLE INSIGHTS
+    # 8️ACTIONABLE INSIGHTS
     # ===============================================================
     st.subheader("💡 Actionable Insights & Recommendations")
     st.markdown("""
@@ -187,21 +179,16 @@ if uploaded_file is not None:
     """)
 
     # ===============================================================
-    # 9️⃣ DOWNLOAD DATA TERFILTER
+    # 9️DOWNLOAD DATA TERFILTER
     # ===============================================================
     st.download_button(
-        "⬇️ Unduh Data Terfilter (CSV)",
+        "⬇Unduh Data Terfilter (CSV)",
         data=filtered.to_csv(index=False).encode('utf-8'),
         file_name='filtered_flight_delay.csv',
         mime='text/csv'
     )
 
 else:
-    st.warning("📂 Silakan unggah file `Flight_delay.csv` terlebih dahulu.")
+    st.warning("Silakan unggah file `Flight_delay.csv` terlebih dahulu.")
 
-# ===============================================================
-# ✅ AKHIR DASHBOARD
-# ===============================================================
-st.sidebar.markdown("---")
-st.sidebar.markdown("**Sumber data:** File CSV `Flight_delay.csv` (dataset penerbangan publik, real data).")
-st.sidebar.markdown("**Dibuat oleh:** Muhammad Azwin Hakim ✨")
+
