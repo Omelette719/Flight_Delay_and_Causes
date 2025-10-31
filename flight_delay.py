@@ -27,9 +27,11 @@ dan **komponen delay terbesar**  guna mendukung pengambilan keputusan yang lebih
 # ===============================================================
 st.subheader("Data Loading & Cleaning")
 
-uploaded_file = st.file_uploader("Unggah dataset Flight_delay.csv", type=["csv"])
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
+try:
+    df = pd.read_csv("Flight_delay.csv")  # <-- file di folder yang sama
+except FileNotFoundError:
+    st.error("❌ File 'Flight_delay.csv' tidak ditemukan di folder utama repo GitHub kamu.")
+    st.stop()
 
     # --- Cek dan ubah tipe data ---
     # --- Cek dan ubah tipe data (pastikan format hari-bulan-tahun) ---
