@@ -4,7 +4,11 @@ import plotly.express as px
 import numpy as np
 
 # --- Konfigurasi halaman ---
-st.set_page_config(page_title="Flight Delay Analytics", page_icon="✈️", layout="wide")
+st.set_page_config(
+    page_title="Flight Delay Analytics",
+    page_icon="✈️",
+    layout="wide"
+)
 px.defaults.template = "plotly_dark"
 
 # ===============================================================
@@ -14,42 +18,47 @@ st.title("Flight Delay Analytics Dashboard")
 st.markdown("""
 Dashboard ini dibuat untuk menganalisis **penyebab keterlambatan penerbangan** 
 berdasarkan berbagai faktor seperti maskapai, cuaca, keamanan, dan kondisi sistem nasional udara (NAS).
+Melalui visualisasi data, kita dapat memahami **tren keterlambatan**, **maskapai paling efisien**, 
+dan **komponen delay terbesar**  guna mendukung pengambilan keputusan yang lebih tepat di industri penerbangan.
 """)
 
 # ===============================================================
-# MUAT DAN CLEANING DATA (langsung dari file di repo)
+# MUAT DAN CLEANING DATA
 # ===============================================================
 st.subheader("Data Loading & Cleaning")
 
-try:
-    df = pd.read_csv("Flight_delay.csv")  # <-- file di folder yang sama
-except FileNotFoundError:
-    st.error("❌ File 'Flight_delay.csv' tidak ditemukan di folder utama repo GitHub kamu.")
-    st.stop()
+uploaded_file = st.file_uploader("Unggah dataset Flight_delay.csv", type=["csv"])
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
 
-# --- lanjut ke preprocessing seperti biasa ---
-df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y', errors='coerce')
-numeric_cols = [
-    'DepTime', 'ArrTime', 'CRSArrTime', 'ActualElapsedTime', 'CRSElapsedTime',
-    'AirTime', 'ArrDelay', 'Distance', 'TaxiIn', 'TaxiOut',
-    'CarrierDelay', 'WeatherDelay', 'NASDelay', 'SecurityDelay', 'LateAircraftDelay'
-]
-for col in numeric_cols:
-    df[col] = pd.to_numeric(df[col], errors='coerce')
+    # --- Cek dan ubah tipe data ---
+    # --- Cek dan ubah tipe data (pastikan format hari-bulan-tahun) ---
+    df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y', errors='coerce')
+    numeric_cols = [
+        'DepTime', 'ArrTime', 'CRSArrTime', 'ActualElapsedTime', 'CRSElapsedTime',
+        'AirTime', 'ArrDelay', 'Distance', 'TaxiIn', 'TaxiOut',
+        'CarrierDelay', 'WeatherDelay', 'NASDelay', 'SecurityDelay', 'LateAircraftDelay'
+    ]
+    for col in numeric_cols:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
 
-df.fillna({
-    'CarrierDelay': 0,
-    'WeatherDelay': 0,
-    'NASDelay': 0,
-    'SecurityDelay': 0,
-    'LateAircraftDelay': 0,
-    'ArrDelay': 0
-}, inplace=True)
+    # --- Penanganan nilai kosong ---
+    df.fillna({
+        'CarrierDelay': 0,
+        'WeatherDelay': 0,
+        'NASDelay': 0,
+        'SecurityDelay': 0,
+        'LateAircraftDelay': 0,
+        'ArrDelay': 0
+    }, inplace=True)
 
-df['TotalDelayMinutes'] = df['CarrierDelay'] + df['WeatherDelay'] + df['NASDelay'] + df['SecurityDelay'] + df['LateAircraftDelay']
-df['OnTime'] = np.where(df['ArrDelay'] <= 30, 1, 0)
-df['Delay_per_100_miles'] = (df['ArrDelay'] / df['Distance']) * 100
-df['Month'] = df['Date'].dt.month
+    # --- Feature Engineering ---
+    df['TotalDelayMinutes'] = (
+        df['CarrierDelay'] + df['WeatherDelay'] + df['NASDelay'] + df['SecurityDelay'] + df['LateAircraftDelay']
+    )
+    df['OnTime'] = np.where(df['ArrDelay'] <= 30, 1, 0)
+    df['Delay_per_100_miles'] = (df['ArrDelay'] / df['Distance']) * 100
+    df['Month'] = df['Date'].dt.month
 
     # --- Anomali menggunakan IQR ---
     q1, q3 = df['ArrDelay'].quantile([0.25, 0.75])
@@ -191,5 +200,4 @@ df['Month'] = df['Date'].dt.month
 
 else:
     st.warning("Silakan unggah file `Flight_delay.csv` terlebih dahulu.")
-
 
